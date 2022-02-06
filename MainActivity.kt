@@ -1,196 +1,169 @@
-package tn.esprit.lemonade
+package com.example.curriculumvitae
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.TextView
-import com.google.android.material.snackbar.Snackbar
+import android.widget.*
 
 class MainActivity : AppCompatActivity() {
-
-    /**
-     * NE MODIFIEZ AUCUN NOM DE VARIABLE OU DE VALEUR OU LEURS VALEURS INITIALES.
-     *
-     * Tout ce qui est étiqueté var au lieu de val devrait être modifié dans les fonctions mais NE PAS
-     * modifier leurs valeurs initiales déclarées ici, cela pourrait empêcher l'application de fonctionner correctement.
-     */
-    private val LEMONADE_STATE = "LEMONADE_STATE"
-    private val LEMON_SIZE = "LEMON_SIZE"
-    private val SQUEEZE_COUNT = "SQUEEZE_COUNT"
-    // SELECT représente l'état "cueillir du citron"
-    private val SELECT = "select"
-    // SQUEEZE représente l'état "presser le citron"
-    private val SQUEEZE = "squeeze"
-    // DRINK représente l'état "boire de la limonade"
-    private val DRINK = "drink"
-    // RESTART représente l'état où la limonade a été bue et le verre est vide
-    private val RESTART = "restart"
-    // Par défaut l'état est à select
-    private var lemonadeState = "select"
-    // Taille de citron par défaut est à -1
-    private var lemonSize = -1
-    // Par défaut le squeezeCount est à -1
-    private var squeezeCount = -1
-
-    private var lemonTree = LemonTree()
-    private var lemonImage: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val next: Button = findViewById(R.id.next)
+        val reset: Button = findViewById(R.id.reset)
+        val homme: RadioButton = findViewById(R.id.rhomme)
+        val femmme: RadioButton = findViewById(R.id.rfemme)
+        homme.isChecked=true
+        var test = false
+        var nbAnd = 0
+        var nbIos = 0
+        var nbFlut = 0
+        val android: SeekBar = findViewById<SeekBar>(R.id.sandroid)
+        val ios: SeekBar = findViewById<SeekBar>(R.id.sios)
+        val flutter: SeekBar = findViewById<SeekBar>(R.id.sflutter)
+        next.setOnClickListener{
+            test = checkAll()
+            android?.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seek: SeekBar,
+                                               progress: Int, fromUser: Boolean) {
 
-        // === NE PAS MODIFIER LE CODE DANS LA DÉCLARATION IF SUIVANTE ===
-        if (savedInstanceState != null) {
-            lemonadeState = savedInstanceState.getString(LEMONADE_STATE, "select")
-            lemonSize = savedInstanceState.getInt(LEMON_SIZE, -1)
-            squeezeCount = savedInstanceState.getInt(SQUEEZE_COUNT, -1)
-        }
-        // === FIN IF ===
+                }
+                override fun onStartTrackingTouch(seek: SeekBar) {
+                }
 
-        lemonImage = findViewById(R.id.image_lemon_state)
-        setViewElements()
+                override fun onStopTrackingTouch(seek: SeekBar) {
+                    nbAnd = seek.progress
+                }
+            })
+            /* IOS */
+            ios?.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seek: SeekBar,
+                                               progress: Int, fromUser: Boolean) {
 
-        lemonImage!!.setOnClickListener {
-            // TODO 1: appeler la méthode qui gère l'état lorsque l'image est cliquée
-            clickLemonImage()
-        }
+                }
+                override fun onStartTrackingTouch(seek: SeekBar) {
+                }
 
-        lemonImage!!.setOnLongClickListener {
-            // TODO 2: remplacer 'false' par un appel à la fonction qui affiche le nombre de compressions
+                override fun onStopTrackingTouch(seek: SeekBar) {
+                    nbIos = seek.progress
+                }
+            })
+            /* FLUTTER */
+            flutter?.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seek: SeekBar,
+                                               progress: Int, fromUser: Boolean) {
+                    nbFlut = progress
+                }
+                override fun onStartTrackingTouch(seek: SeekBar) {
+                }
 
-            showSnackbar()
-        }
-    }
-
-    /**
-     * === NE PAS MODIFIER CETTE MÉTHODE ===
-     *
-     * Cette méthode enregistre l'état de l'application si elle est mise en arrière-plan.
-     */
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString(LEMONADE_STATE, lemonadeState)
-        outState.putInt(LEMON_SIZE, lemonSize)
-        outState.putInt(SQUEEZE_COUNT, squeezeCount)
-        super.onSaveInstanceState(outState)
-    }
-
-    /**
-     * En cliquant, vous obtiendrez une réponse différente selon l'état.
-     * Cette méthode détermine l'état et procède à l'action correcte.
-     */
-    private fun clickLemonImage() {
-        // TODO 3: utilisez une instruction conditionnelle comme 'if' ou 'when'  pour suivre le limonadeState
-        //  lorsque l'image est cliquée, nous devrons peut-être changer d'état à l'étape suivante dans la
-        //  progression de la fabrication de limonade (ou au moins apporter quelques modifications à l'état actuel dans le
-        //  cas de presser le citron). Cela devrait être fait dans cette instruction conditionnelle
-
-        // TODO 4: Lorsque l'on clique sur l'image dans l'état SELECT, l'état doit devenir SQUEEZE
-        //  - La variable lemonSize doit être définie à l'aide de la méthode 'pick()' dans la classe LemonTree
-        //  - Le squeezeCount doit être égal à 0 car nous n'avons pas encore pressé de citron.
-
-        // TODO 5: Lorsque l'on clique sur l'image dans l'état SQUEEZE, le squeezeCount doit être
-        //  AUGMENTÉ de 1 et la taille du citron doit être DIMINUÉE de 1.
-        //  - Si le lemonSize a atteint 0, il a été pressé et l'état devrait devenir DRINK
-        //  - De plus, lemonSize n'est plus pertinent et doit être défini sur -1
-
-        // TODO 6: Lorsque l'on clique sur l'image dans l'état DRINK, l'état doit devenir RESTART
-
-        // TODO 7: Lorsque l'on clique sur l'image dans l'état RESTART, l'état doit devenir SELECT
-
-        // TODO 8: Enfin, avant que la fonction ne se termine, nous devons définir les éléments de vue de sorte que
-        //  L'interface utilisateur peut refléter l'état correct
-
-        var conditionSortie = false
-
-        if (lemonadeState == SELECT && !conditionSortie) {
-            lemonadeState = "squeeze"
-            val  lemonTree = LemonTree()
-            lemonSize = lemonTree.pick()
-            squeezeCount = 0
-            conditionSortie = true;
-        }
-        if (lemonadeState == SQUEEZE && !conditionSortie) {
-            if(lemonSize == 0){
-                lemonadeState = "drink"
-                lemonSize = -1
-                conditionSortie = true;
-            }else{
-                lemonSize--
-                squeezeCount++
+                override fun onStopTrackingTouch(seek: SeekBar) {
+                    nbFlut = seek.progress
+                }
+            })
+            if( (nbAnd <=30) && (nbIos <=30) && (nbFlut <= 30) )
+            {
+                Toast.makeText(applicationContext, "Vous devez travailler vos skills",
+                    Toast.LENGTH_SHORT).show()
+            }
+            if((nbAnd >30) && (nbIos > 30) && (nbFlut > 30))
+            {
+                Toast.makeText(applicationContext, "Vous avez de bons skills !",
+                    Toast.LENGTH_SHORT).show()
+            }
+            if( (nbAnd>80) && (nbAnd>nbIos) && (nbAnd>nbFlut) )
+            {
+                Toast.makeText(applicationContext, "Vous êtes excellent en Android",
+                    Toast.LENGTH_SHORT).show()
+            }
+            if((nbIos>80) && (nbIos>nbAnd) && (nbIos>nbFlut))
+            {
+                Toast.makeText(applicationContext, "Vous êtes excellent en Ios",
+                    Toast.LENGTH_SHORT).show()
+            }
+            if((nbFlut>80) && (nbFlut>nbAnd) && (nbFlut>nbIos))
+            {
+                Toast.makeText(applicationContext, "Vous êtes excellent en Flutter",
+                    Toast.LENGTH_SHORT).show()
             }
         }
-        if (lemonadeState == DRINK && !conditionSortie) {
-            lemonadeState = "restart"
-            conditionSortie = true;
-        }
-        if (lemonadeState == RESTART && !conditionSortie) {
-            lemonadeState = "select"
-            conditionSortie = true;
-        }
-        println(lemonadeState)
 
-        setViewElements()
-
-    }
-
-    /**
-     * Mettre en place les éléments d'affichage selon l'état.
-     */
-    private fun setViewElements() {
-        val textAction: TextView = findViewById(R.id.text_action)
-        // TODO 9: mettre en place une condition qui suit la limonadeState
-        // TODO 10: pour chaque état, le textAction TextView doit être défini sur la chaîne correspondante
-        //  du fichier de string ressources . Les strings sont nommées pour correspondre à l'état
-        // TODO 11: De plus, pour chaque état, le lemonImage doit être défini sur le correspondant
-        //  drawable des drawable ressources . Les drawables ont les mêmes noms que les strings
-        //  mais rappelez-vous que ce sont des drawables, pas des chaînes.
-        if (lemonadeState == SELECT) {
-            lemonImage!!.setImageResource(R.drawable.lemon_tree)
-            textAction.setText(R.string.lemon_select)
-        }
-        if (lemonadeState == SQUEEZE) {
-            lemonImage!!.setImageResource(R.drawable.lemon_squeeze)
-            textAction.setText(R.string.lemon_squeeze)
+        reset.setOnClickListener{
+             nbAnd = 0
+             nbIos = 0
+            nbFlut = 0
+            resetText()
         }
 
-        if (lemonadeState == DRINK) {
-            lemonImage!!.setImageResource(R.drawable.lemon_drink)
-            textAction.setText(R.string.lemon_drink)
-        }
-
-        if (lemonadeState == RESTART) {
-            lemonImage!!.setImageResource(R.drawable.lemon_restart)
-            textAction.setText(R.string.lemon_empty_glass)
-        }
 
 
     }
-
-    /**
-     * === NE PAS MODIFIER CETTE MÉTHODE ===
-     *
-     * Un clic long sur l'image du citron montrera combien de fois le citron a été pressé.
-     */
-    private fun showSnackbar(): Boolean {
-        if (lemonadeState != SQUEEZE) {
-            return false
-        }
-        val squeezeText = getString(R.string.squeeze_count, squeezeCount)
-        Snackbar.make(
-            findViewById(R.id.constraint_Layout),
-            squeezeText,
-            Snackbar.LENGTH_SHORT
-        ).show()
+    private fun resetText(): Boolean
+    {
+        val fullname: EditText = findViewById(R.id.tfullname)
+        val age: EditText = findViewById(R.id.tage)
+        val email: EditText = findViewById(R.id.temail)
+        val homme: RadioButton = findViewById(R.id.rhomme)
+        fullname.text.clear()
+        age.text.clear()
+        email.text.clear()
+        val android: SeekBar = findViewById<SeekBar>(R.id.sandroid)
+        val ios: SeekBar = findViewById<SeekBar>(R.id.sios)
+        val flutter: SeekBar = findViewById<SeekBar>(R.id.sflutter)
+        android.setProgress(0)
+        ios.setProgress(0)
+        flutter.setProgress(0)
+        homme.isChecked=true
         return true
     }
-}
+    private fun Choice(): Boolean
+    {
 
-/**
- * Une classe Lemon Tree avec une méthode "pick" pour cueillir un citron. La "taille" du citron est aléatoire
- * et détermine combien de fois un citron doit être pressé avant d'obtenir de la limonade.
- */
-class LemonTree {
-    fun pick(): Int {
-        return (2..4).random()
+
+
+        return true
+    }
+ private fun checkAll(): Boolean {
+     val fullname: EditText = findViewById(R.id.tfullname)
+     val age: EditText = findViewById(R.id.tage)
+     val email: EditText = findViewById(R.id.temail)
+     var sFullname = fullname.getText().toString();
+     var sage = age.getText().toString();
+     var semail = email.getText().toString().trim();
+     val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+     if(sFullname.isEmpty()&&sage.isEmpty()&&semail.isEmpty())
+     {
+         Toast.makeText(applicationContext, "Check your Input",
+             Toast.LENGTH_SHORT).show()
+         return false
+     }
+    if(sFullname.isEmpty())
+    {
+        Toast.makeText(applicationContext, "Check your Fullname",
+            Toast.LENGTH_SHORT).show()
+        return false
+    }
+     if(sage.isEmpty())
+     {
+         Toast.makeText(applicationContext, "Check your Age",
+             Toast.LENGTH_SHORT).show()
+         return false
+     }
+     if (semail.matches(emailPattern.toRegex())) {
+     } else {
+         Toast.makeText(applicationContext, "Check your Email",
+             Toast.LENGTH_SHORT).show()
+         return false
+     }
+     return true
+ }
+    fun onStopTrackingTouch(seek: SeekBar) {
+        // write custom code for progress is stopped
+        Toast.makeText(this@MainActivity,
+            "Progress is: " + seek.progress + "%",
+            Toast.LENGTH_SHORT).show()
     }
 }
